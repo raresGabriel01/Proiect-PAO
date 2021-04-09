@@ -76,6 +76,16 @@ public class Catalog {
         }
         if(studentNou != null) {
             this.listaStudenti.add(studentNou);
+            Collections.sort(this.listaStudenti, (s1, s2) -> {  // studentii sunt ordonati crescator mai intai dupa an
+                                                                // apoi dupa nume si apoi dupa prenume
+                if(s1.getAn().equals(s2.getAn())){
+                    if(s1.getNume().compareTo(s2.getNume()) == 0) {
+                        return s1.getPrenume().compareTo(s2.getPrenume());
+                    }
+                    return s1.getNume().compareTo(s2.getNume());
+                }
+                return s1.getAn() - s2.getAn();
+            });
             System.out.println("Student adaugat cu succes");
         }
 

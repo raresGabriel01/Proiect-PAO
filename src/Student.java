@@ -36,4 +36,6 @@ public abstract class Student {
     public String toString() {
         return this.nume + " " + this.prenume + " " + " este student in anul " + this.an;
     }
+
+
 }
