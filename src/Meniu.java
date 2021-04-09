@@ -15,7 +15,7 @@ public class Meniu {
 
         System.out.println("============================================================\n" +
                 "Pentru moment m-am limitat la numarul strict minim deoarece codul se va modifica " +
-                "mult atunci cand vom adauga bazele de date si implicit operatiile de tip CRUD\n" +
+                "mult atunci cand vom adauga bazele de date si implicit toate operatiile de tip CRUD\n" +
                 "Proiect PAO - Baesu Rares Gabriel, grupa 243\n" +
                 "===============================================================\n" +
                 "Introduceti una din optiunile dorite:\n" +

@@ -1,7 +1,7 @@
 import java.util.Date;
 
 public class Examen {
-    Date data;
+    private Date data;
 
     Examen(Date data) {
         this.data = data;

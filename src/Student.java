@@ -1,7 +1,7 @@
 public abstract class Student {
-    private String nume;
-    private String prenume;
-    private Integer an;
+    protected String nume;
+    protected String prenume;
+    protected Integer an;
     Student(String nume, String prenume, Integer an){
         this.nume = nume;
         this.prenume = prenume;
