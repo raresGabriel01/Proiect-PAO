@@ -165,7 +165,7 @@ public class Catalog {
             }
         }while(flag);
 
-        Curs curs = new Curs(nume,credite,perioadaDesfasurare,dataExamen,profesor);
+        Curs curs = new Curs(nume,credite,perioadaDesfasurare,new Examen(dataExamen),profesor);
 
         this.listaCursuri.add(curs);
         System.out.println("Curs adaugat cu succes");
@@ -237,7 +237,7 @@ public class Catalog {
                 for(Pair<Curs,Nota> pereche : entry.getValue()){
                     Curs curs = pereche.getKey();
                     Nota nota = pereche.getValue();
-                    System.out.println(curs.getNume() + " : " + nota.getValoare() + "(" + curs.getDataExamen().toString() +")");
+                    System.out.println(curs.getNume() + " : " + nota.getValoare() + "(" + curs.getExamen().toString() +")");
                 }
             }
         }
@@ -274,6 +274,51 @@ public class Catalog {
             }
         }
 
+    }
+
+    public void modificaStudent() {
+
+        if(this.listaStudenti.size() == 0) {
+            System.out.println("Nu exista studenti de modificat");
+        }else {
+            System.out.println("Introduceti id-ul studentului pe care doriti sa il modificati");
+            Scanner myScanner = new Scanner(System.in);
+            Integer idStudent = Integer.parseInt(myScanner.nextLine());
+
+            Student student = this.listaStudenti.get(idStudent);
+
+            System.out.println("Introduceti ce doriti sa modificati: \n" +
+                    "1. Numele \n" +
+                    "2. Prenumele \n" +
+                    "3. Anul de studiu \n");
+
+            Integer optiune = Integer.parseInt(myScanner.nextLine());
+
+            switch(optiune){
+                case 1:
+                    System.out.println("Introduceti noul nume:");
+                    String numeNou = myScanner.nextLine();
+                    student.setNume(numeNou);
+                    break;
+                case 2:
+                    System.out.println("Introduceti noul prenume:");
+                    String prenumeNou = myScanner.nextLine();
+                    student.setPrenume(prenumeNou);
+                    break;
+                case 3:
+                    System.out.println("Introduceti noul an:");
+                    Integer anNou = Integer.parseInt(myScanner.nextLine());
+                    try {
+                        student.setAn(anNou);
+                    }catch(Exception e) {
+                        System.out.println("An invalid pentru domeniul de studiu");
+                    }
+
+                    break;
+                default:
+                    System.out.println("optiune invalida");
+            }
+        }
 
 
 

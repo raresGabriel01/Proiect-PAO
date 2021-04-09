@@ -29,7 +29,8 @@ public class Meniu {
                 "7. Adaugati o nota unui student\n" +
                 "8. Afisati toate notele \n" +
                 "9. Afisati notele unui anumit student \n" +
-                "10. Afisati din nou meniul");
+                "10. Afisati din nou meniul \n" +
+                "11. Modificati un student");
     }
     public void deschideMeniu() {
 
