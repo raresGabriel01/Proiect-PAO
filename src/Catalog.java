@@ -280,7 +280,7 @@ public class Catalog {
 
         if(this.listaStudenti.size() == 0) {
             System.out.println("Nu exista studenti de modificat");
-        }else {
+        } else {
             System.out.println("Introduceti id-ul studentului pe care doriti sa il modificati");
             Scanner myScanner = new Scanner(System.in);
             Integer idStudent = Integer.parseInt(myScanner.nextLine());
@@ -322,5 +322,22 @@ public class Catalog {
 
 
 
+    }
+
+    public void eliminaStudent() {
+
+
+        if(this.listaStudenti.size() == 0) {
+            System.out.println("nu exista studenti de sters");
+        }else {
+            System.out.println("Introduceti id-ul studentului pe care doriti sa il stergeti");
+            Scanner myScanner = new Scanner(System.in);
+            Integer idStudent = Integer.parseInt(myScanner.nextLine());
+
+            Student student = this.listaStudenti.get(idStudent);
+
+            this.note.remove(student);
+            this.listaStudenti.remove(idStudent);
+        }
     }
 }

@@ -30,7 +30,8 @@ public class Meniu {
                 "8. Afisati toate notele \n" +
                 "9. Afisati notele unui anumit student \n" +
                 "10. Afisati din nou meniul \n" +
-                "11. Modificati un student");
+                "11. Modificati un student \n" +
+                "12. Sterge un student \n");
     }
     public void deschideMeniu() {
 
@@ -83,6 +84,10 @@ public class Meniu {
                 case 10:
                     afiseazaMeniu();
                     break;
+                case 11:
+                    this.catalog.modificaStudent();
+                    break;
+
                 default:
                     System.out.println("Comanda invalida");
             }
