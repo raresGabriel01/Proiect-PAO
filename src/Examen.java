@@ -14,4 +14,9 @@ public class Examen {
     public void setData(Date data) {
         this.data = data;
     }
+
+    @Override
+    public String toString() {
+        return data.toString();
+    }
 }

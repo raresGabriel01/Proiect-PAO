@@ -1,6 +1,8 @@
 import javafx.util.Pair;
+import sun.java2d.pipe.SpanShapeRenderer;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class Catalog {
@@ -8,12 +10,66 @@ public class Catalog {
     private ArrayList<Profesor> listaProfesori;
     private ArrayList<Curs> listaCursuri;
     private HashMap<Student, ArrayList<Pair<Curs,Nota>>> note;
-
+    private MyFileWriter myFileWriter = MyFileWriter.getInstance();
+    private MyFileReader myFileReader = MyFileReader.getInstance();
     Catalog() {
         this.listaStudenti = new ArrayList<>();
         this.listaCursuri = new ArrayList<>();
         this.listaProfesori = new ArrayList<>();
         this.note = new HashMap<>();
+
+        String profesori = myFileReader.read("CSV/profesori.csv");
+        String[] prf = profesori.split("\n");
+        for (String prof : prf) {
+            String[] attr = prof.split(",");
+            Profesor myProfesor = new Profesor(attr[0],attr[1],attr[2]);
+            listaProfesori.add(myProfesor);
+        }
+
+        String studentiLicenta = myFileReader.read("CSV/studenti_licenta.csv");
+        String[] stdL = studentiLicenta.split("\n");
+        for(String std : stdL){
+            String[] attr = std.split(",");
+            StudentLicenta myStudentLicenta;
+            try{
+                myStudentLicenta = new StudentLicenta(attr[0],attr[1],Integer.parseInt(attr[2]),attr[3]);
+                listaStudenti.add(myStudentLicenta);
+            }catch(Exception e){
+                System.out.println("An gresit de studiu in fisier");
+            }
+        }
+
+        String studentiMaster = myFileReader.read("CSV/studenti_master.csv");
+        String[] stdM = studentiMaster.split("\n");
+        for(String std : stdM){
+            String[] attr = std.split(",");
+            StudentMaster myStudentMaster;
+            try{
+                myStudentMaster = new StudentMaster(attr[0],attr[1],Integer.parseInt(attr[2]),attr[3]);
+                listaStudenti.add(myStudentMaster);
+            }catch(Exception e){
+                System.out.println("An de studiu gresit in fisier");
+            }
+        }
+
+        String cursuri = myFileReader.read("CSV/cursuri.csv");
+        String[] c = cursuri.split("\n");
+        for(String curs: c){
+            String[] attr = curs.split(",");
+            try {
+                Date dataInceput = new SimpleDateFormat("dd/MM/yyyy").parse(attr[2]);
+                Date dataFinal = new SimpleDateFormat("dd/MM/yyyy").parse(attr[3]);
+                Date dataExamen = new SimpleDateFormat("dd/MM/yyyy").parse(attr[4]);
+                Curs myCurs = new Curs(attr[0],Integer.parseInt(attr[1]),
+                        new Pair<Date,Date>(dataInceput,dataFinal),new Examen(dataExamen),listaProfesori.get(Integer.parseInt(attr[5])));
+                listaCursuri.add(myCurs);
+            }catch(Exception e) {
+                System.out.println(e.getMessage());
+            }
+
+        }
+
+        ServiciuAudit.audit("loaded_catalog", LocalDateTime.now());
     }
 
     public void afiseazaStudenti() {
@@ -24,6 +80,8 @@ public class Catalog {
                 System.out.println(student);
             }
         }
+
+        ServiciuAudit.audit("printing_students",LocalDateTime.now());
     }
 
     public void adaugaStudent() {
@@ -76,6 +134,19 @@ public class Catalog {
         }
         if(studentNou != null) {
             this.listaStudenti.add(studentNou);
+            String path = "";
+            String content = "";
+            if(studentNou instanceof StudentLicenta){
+                path = "CSV/studenti_licenta.csv";
+                content = String.format("%s,%s,%s,%s\n", studentNou.getNume(), studentNou.getPrenume(), studentNou.getAn(),
+                        ( (StudentLicenta) studentNou).getDomeniuLicenta());
+            }else {
+                path = "CSV/studenti_master.csv";
+                content = String.format("%s,%s,%s,%s\n", studentNou.getNume(), studentNou.getPrenume(), studentNou.getAn(),
+                        ( (StudentMaster) studentNou).getDomeniuMaster());
+            }
+
+            myFileWriter.writeTo(content,path);
             Collections.sort(this.listaStudenti, (s1, s2) -> {  // studentii sunt ordonati crescator mai intai dupa an
                                                                 // apoi dupa nume si apoi dupa prenume
                 if(s1.getAn().equals(s2.getAn())){
@@ -88,7 +159,7 @@ public class Catalog {
             });
             System.out.println("Student adaugat cu succes");
         }
-
+        ServiciuAudit.audit("added_student",LocalDateTime.now());
     }
 
     public void afiseazaProfesori() {
@@ -99,6 +170,7 @@ public class Catalog {
                 System.out.println(profesor);
             }
         }
+        ServiciuAudit.audit("printed_teachers", LocalDateTime.now());
     }
 
     public void adaugaProfesor(){
@@ -118,7 +190,11 @@ public class Catalog {
         }while(flag);
         Profesor profesor = new Profesor(nume,prenume,titlu);
         this.listaProfesori.add(profesor);
+        String path = "CSV/profesori.csv";
+        String content = String.format("%s,%s,%s\n",nume,prenume,titlu);
+        myFileWriter.writeTo(content,path);
         System.out.println("Profesor adaugat cu succes");
+        ServiciuAudit.audit("added_teacher",LocalDateTime.now());
     }
 
     public void afiseazaToateCursurile() {
@@ -129,6 +205,7 @@ public class Catalog {
                 System.out.println(curs);
             }
         }
+        ServiciuAudit.audit("printed_courses",LocalDateTime.now());
     }
 
     public void adaugaCurs() {
@@ -137,9 +214,11 @@ public class Catalog {
         Pair<Date,Date> perioadaDesfasurare = null;
         Date dataExamen = null;
         Profesor profesor = null;
-
+        Integer id = -1;
         Scanner myScanner = new Scanner(System.in);
-
+        String stringDataInceput = "";
+        String stringDataFinal = "";
+        String stringDataExamen = "";
         boolean flag = true;
 
         do {
@@ -151,12 +230,16 @@ public class Catalog {
                 flag = false;
                 nume = input[0].trim().toUpperCase();
                 try{
+                    stringDataExamen = input[4].trim();
+                    stringDataFinal = input[3].trim();
+                    stringDataInceput = input[2].trim();
                     credite = Integer.parseInt(input[1].trim());
                     Date dataInceput = new SimpleDateFormat("dd/MM/yyyy").parse(input[2].trim());
                     Date dataSfarsit =  new SimpleDateFormat("dd/MM/yyyy").parse(input[3].trim());
                     perioadaDesfasurare = new Pair<>(dataInceput,dataSfarsit);
                     dataExamen = new SimpleDateFormat("dd/MM/yyyy").parse(input[4].trim());
-                    profesor = this.listaProfesori.get(Integer.parseInt(input[5].trim()));
+                    id = Integer.parseInt(input[5].trim());
+                    profesor = this.listaProfesori.get(id);
                 }catch(Exception e){
                     flag = true;
                 }
@@ -168,7 +251,12 @@ public class Catalog {
         Curs curs = new Curs(nume,credite,perioadaDesfasurare,new Examen(dataExamen),profesor);
 
         this.listaCursuri.add(curs);
+        String path = "CSV/cursuri.csv";
+        String content = String.format("%s,%s,%s,%s,%s,%s\n", nume, credite,stringDataInceput,stringDataFinal,
+                stringDataExamen,id);
+        myFileWriter.writeTo(content,path);
         System.out.println("Curs adaugat cu succes");
+        ServiciuAudit.audit("added_course",LocalDateTime.now());
     }
 
     void adaugaNotaStudent(){
@@ -223,7 +311,9 @@ public class Catalog {
 
 
         this.note.get(student).add(new Pair<Curs,Nota>(curs,nota));
+
         System.out.println("Nota adaugata cu succes");
+        ServiciuAudit.audit("added_grade",LocalDateTime.now());
     }
 
     public void afiseazaToateNotele() {
@@ -241,6 +331,7 @@ public class Catalog {
                 }
             }
         }
+        ServiciuAudit.audit("printed_all_grades", LocalDateTime.now());
     }
 
     public void afiseazaNota() {
@@ -273,7 +364,7 @@ public class Catalog {
                 }
             }
         }
-
+        ServiciuAudit.audit("printed_grade",LocalDateTime.now());
     }
 
     public void modificaStudent() {
@@ -320,7 +411,7 @@ public class Catalog {
             }
         }
 
-
+        ServiciuAudit.audit("modified_student",LocalDateTime.now());
 
     }
 
@@ -339,5 +430,6 @@ public class Catalog {
             this.note.remove(student);
             this.listaStudenti.remove(idStudent);
         }
+        ServiciuAudit.audit("deleted_student", LocalDateTime.now());
     }
 }
