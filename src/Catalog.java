@@ -1,11 +1,15 @@
 import javafx.util.Pair;
-import sun.java2d.pipe.SpanShapeRenderer;
+
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 
 public class Catalog {
+
+    
+
+
     private ArrayList<Student> listaStudenti;
     private ArrayList<Profesor> listaProfesori;
     private ArrayList<Curs> listaCursuri;
@@ -147,7 +151,7 @@ public class Catalog {
             }
 
             myFileWriter.writeTo(content,path);
-            Collections.sort(this.listaStudenti, (s1, s2) -> {  // studentii sunt ordonati crescator mai intai dupa an
+           /* Collections.sort(this.listaStudenti, (s1, s2) -> {  // studentii sunt ordonati crescator mai intai dupa an
                                                                 // apoi dupa nume si apoi dupa prenume
                 if(s1.getAn().equals(s2.getAn())){
                     if(s1.getNume().compareTo(s2.getNume()) == 0) {
@@ -156,7 +160,7 @@ public class Catalog {
                     return s1.getNume().compareTo(s2.getNume());
                 }
                 return s1.getAn() - s2.getAn();
-            });
+            });*/
             System.out.println("Student adaugat cu succes");
         }
         ServiciuAudit.audit("added_student",LocalDateTime.now());
