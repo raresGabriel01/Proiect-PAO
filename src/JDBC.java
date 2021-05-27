@@ -90,10 +90,20 @@ public class JDBC implements AutoCloseable, IDBCRUD{
         return null;
     }
 
+    public List<DBNota> citesteNote() throws Exception {
+        List<DBNota> note = new ArrayList<>();
+        ResultSet results = this.connection.createStatement.executeQuery("select * from note");
+        while(results.next()) {
+            note.add(new DBNota(results.getString(1), Integer.parseInt(results.getString(2)), Date(results.getString(3));
+        }
+        return note;
+    }
+
+    public boolean updateNota()
 
     @Override
     public void close() throws Exception {
-
+        this.connection.close();
     }
 }
 */
